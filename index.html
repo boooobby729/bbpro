@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boooooby Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@900&family=Ayuthaya&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1A1A1A;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .slide {
+            position: relative;
+            width: 1920px;
+            height: 2160px;
+            background: #1A1A1A;
+            margin: 0 auto;
+        }
+
+        /* 标题区域 - Frame 7 */
+        .header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 38px;
+            position: absolute;
+            left: 117px;
+            top: 72px;
+        }
+
+        .header h1 {
+            font-family: 'M PLUS 1', sans-serif;
+            font-style: normal;
+            font-weight: 900;
+            font-size: 114.614px;
+            line-height: 166px;
+            color: #FFFFFF;
+        }
+
+        /* 副标题 */
+        .subtitle {
+            position: absolute;
+            left: 117px;
+            top: 251px;
+            font-family: 'Ayuthaya', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 26.2873px;
+            line-height: 36px;
+            color: #FFFFFF;
+        }
+
+        .handle {
+            position: absolute;
+            left: 117px;
+            top: 299px;
+            font-family: 'Ayuthaya', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 26.2873px;
+            line-height: 36px;
+            color: #FFFFFF;
+        }
+
+        /* 图片公共过渡效果 */
+        .image-envelope,
+        .phone,
+        .image-tablet,
+        .notepad,
+        .turntable {
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), z-index 0s;
+            cursor: pointer;
+        }
+
+        .image-envelope:hover,
+        .phone:hover,
+        .image-tablet:hover,
+        .notepad:hover,
+        .turntable:hover {
+            transform: rotate(0deg) scale(1.5);
+            z-index: 100;
+        }
+
+        /* image 25 - 信封/酒店卡片 (左侧) */
+        .image-envelope {
+            position: absolute;
+            width: 575.67px;
+            height: 382.48px;
+            left: 62px;
+            top: 394px;
+            transform: rotate(42.69deg);
+            z-index: 1;
+        }
+
+        .image-envelope img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Group 15 - iPhone 手机 (中间) */
+        .phone {
+            position: absolute;
+            width: 297.29px;
+            height: 583.9px;
+            left: 720.34px;
+            top: 362.15px;
+            filter: drop-shadow(14px 4px 10px rgba(0, 0, 0, 0.44));
+            transform: rotate(6.99deg);
+            z-index: 2;
+            display: block;
+            text-decoration: none;
+        }
+
+        .phone img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* image 17 - 粉色青蛙平板 (左下) */
+        .image-tablet {
+            position: absolute;
+            width: 345.19px;
+            height: 376.25px;
+            left: 470px;
+            top: 670px;
+            filter: drop-shadow(-2px 12px 14.5px rgba(0, 0, 0, 0.41));
+            transform: rotate(-3.28deg);
+            z-index: 3;
+        }
+
+        .image-tablet img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Group 17 - 记事本窗口 (右上) */
+        .notepad {
+            position: absolute;
+            width: 479px;
+            height: 322px;
+            left: 1034px;
+            top: 499px;
+            transform: rotate(0deg);
+            z-index: 4;
+        }
+
+        .notepad img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* image 28 - 黑胶唱片机 (右下) */
+        .turntable {
+            position: absolute;
+            width: 377.56px;
+            height: 377.74px;
+            left: 1292px;
+            top: 589px;
+            filter: drop-shadow(15px 3px 19px rgba(0, 0, 0, 0.56));
+            transform: rotate(15.18deg);
+            z-index: 5;
+        }
+
+        .turntable img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 响应式缩放 - 使用 zoom 保持边距和滚动正常 */
+        @media (max-width: 1920px) {
+            .slide {
+                zoom: calc(100vw / 1920);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <!-- 标题 -->
+        <div class="header">
+            <h1>Boooooby</h1>
+            <h1>Portfolio</h1>
+        </div>
+
+        <!-- 副标题 -->
+        <p class="subtitle">A Personal Portfolio</p>
+        <p class="handle">@meituan</p>
+
+        <!-- 信封/酒店卡片 - 左侧大旋转 -->
+        <div class="image-envelope">
+            <img src="image25.png" alt="Blanche Hotel card">
+        </div>
+
+        <!-- iPhone 手机 - 中间 -->
+        <a href="phone.html" target="_blank" class="phone">
+            <img src="group15.png" alt="iPhone mockup">
+        </a>
+
+        <!-- 粉色青蛙平板 - 左下 -->
+        <a href="guaguale.html" target="_blank" class="image-tablet">
+            <img src="image17.png" alt="呱呱乐 Case Study">
+        </a>
+
+        <!-- 记事本窗口 - 右上 -->
+        <div class="notepad">
+            <img src="group17.png" alt="Notepad window">
+        </div>
+
+        <!-- 黑胶唱片机 - 右下 -->
+        <div class="turntable">
+            <img src="image28.png" alt="Turntable">
+        </div>
+    </div>
+</body>
+</html>

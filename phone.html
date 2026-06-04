@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Project - Boooooby Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1A1A1A;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .scene {
+            perspective: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .parallax-container {
+            position: relative;
+            width: 174px;
+            height: 273px;
+            transform-style: preserve-3d;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+
+        /* 点击展开后的状态 */
+        .parallax-container.expanded {
+            transform: rotateY(-35deg) rotateX(5deg);
+        }
+
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transform: translateZ(0px);
+            opacity: 1;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        opacity 0.3s ease;
+            will-change: transform, opacity;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .parallax-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* 图层名称标签 */
+        .layer-label {
+            position: absolute;
+            right: -160px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* 展开后各层的 Z 轴位置 */
+        .expanded .layer-4 { transform: translateZ(0px); }
+        .expanded .layer-3 { transform: translateZ(120px); }
+        .expanded .layer-2 { transform: translateZ(240px); }
+        .expanded .layer-1 { transform: translateZ(360px); }
+
+        /* 展开后 hover 某一层 */
+        .expanded .parallax-layer {
+            cursor: pointer;
+        }
+
+        .expanded .parallax-layer:hover {
+            transform: scale(1.2);
+        }
+
+        .expanded .layer-4:hover { transform: translateZ(0px) scale(1.2); }
+        .expanded .layer-3:hover { transform: translateZ(120px) scale(1.2); }
+        .expanded .layer-2:hover { transform: translateZ(240px) scale(1.2); }
+        .expanded .layer-1:hover { transform: translateZ(360px) scale(1.2); }
+
+        .expanded .parallax-layer:hover .layer-label {
+            opacity: 1;
+        }
+
+        /* 展开后，hover 某层时其他层变暗 */
+        .expanded:hover .parallax-layer {
+            opacity: 0.4;
+        }
+
+        .expanded:hover .parallax-layer:hover {
+            opacity: 1;
+        }
+
+        /* 从下到上层级 */
+        .layer-4 { z-index: 1; }
+        .layer-3 { z-index: 2; }
+        .layer-2 { z-index: 3; }
+        .layer-1 { z-index: 4; }
+
+        /* 提示文字 */
+        .hint {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+
+        .hint.hidden {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <div class="parallax-container" id="container">
+            <div class="parallax-layer layer-4">
+                <img src="layer4.png" alt="Layer 4">
+                <span class="layer-label">外框边框</span>
+            </div>
+            <div class="parallax-layer layer-3">
+                <img src="layer3.png" alt="Layer 3">
+                <span class="layer-label">麦当劳薯条袋</span>
+            </div>
+            <div class="parallax-layer layer-2">
+                <img src="layer2.png" alt="Layer 2">
+                <span class="layer-label">奶酪卡片背景</span>
+            </div>
+            <div class="parallax-layer layer-1">
+                <img src="layer1.png" alt="Layer 1">
+                <span class="layer-label">文字信息层</span>
+            </div>
+        </div>
+    </div>
+
+    <p class="hint" id="hint">点击展开图层</p>
+
+    <script>
+        const container = document.getElementById('container');
+        const hint = document.getElementById('hint');
+        let expanded = false;
+
+        container.addEventListener('click', () => {
+            expanded = !expanded;
+            container.classList.toggle('expanded');
+            hint.textContent = expanded ? '点击收起' : '点击展开图层';
+        });
+    </script>
+</body>
+</html>
