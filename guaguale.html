@@ -4,20 +4,752 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>呱呱乐 — Case Study</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             background: #FFFFFF;
             min-height: 100vh;
+            font-family: "PingFang SC", "Noto Sans SC", -apple-system, sans-serif;
+            overflow-x: hidden;
+            color: #1d1d1f;
+            -webkit-font-smoothing: antialiased;
         }
+
+        /* === HERO (First Screen) === */
         .hero-bg {
+            position: fixed;
+            top: 0; left: 0;
             width: 100%;
-            height: 560px;
-            background: url('assets/hero-bg.png') center top / cover no-repeat;
+            height: 100vh;
+            background: url('assets/hero-bg.png') center / cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 200px;
+            z-index: 0;
+        }
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.05s linear, opacity 0.05s linear;
+            will-change: transform, opacity;
+        }
+        .hero-desc {
+            margin-top: 50px;
+            font-size: 16px;
+            color: #FFFFFF;
+            text-align: center;
+            max-width: 1000px;
+            line-height: 1.8;
+            padding: 0 40px;
+        }
+
+        /* === FROG PEEK === */
+        .frog-peek {
+            position: relative;
+            z-index: 4;
+            margin-top: calc(100vh - 400px);
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+            margin-bottom: -48px;
+            transform: translateY(55px);
+        }
+        .frog-swap {
+            position: relative;
+            width: 100%;
+            max-width: 960px;
+        }
+        .frog-frame {
+            width: 100%;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .frog-frame-1 {
+            position: relative;
+            animation: frogSwap1 1s step-end infinite;
+        }
+        .frog-frame-2 {
+            animation: frogSwap2 1s step-end infinite;
+        }
+        @keyframes frogSwap1 {
+            0%   { opacity: 1; }
+            50%  { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes frogSwap2 {
+            0%   { opacity: 0; }
+            50%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* === WHITE OVERLAY PANEL === */
+        .content-panel {
+            position: relative;
+            z-index: 3;
+            background: #FFFFFF;
+            border-radius: 48px 48px 0 0;
+            padding-bottom: 120px;
+            overflow: hidden;
+        }
+        .content-panel-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M16 6 L18 14 L26 16 L18 18 L16 26 L14 18 L6 16 L14 14 Z' fill='%23f5e642' opacity='0.25'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            -webkit-mask-image: radial-gradient(circle 120px at var(--mouse-x, -200px) var(--mouse-y, -200px), black 0%, transparent 100%);
+            mask-image: radial-gradient(circle 120px at var(--mouse-x, -200px) var(--mouse-y, -200px), black 0%, transparent 100%);
+            transition: opacity 0.3s ease;
+        }
+        .content-panel:hover .content-panel-pattern {
+            animation: patternBreathe 1.5s ease-in-out infinite;
+        }
+        @keyframes patternBreathe {
+            0%   { opacity: 0.4; }
+            50%  { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+        .content-panel > *:not(.content-panel-pattern) {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === SIDE NAV (刻度尺) === */
+        .side-nav {
+            position: fixed;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .side-nav.visible {
+            opacity: 1;
+        }
+        .side-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .side-nav-tick {
+            width: 16px;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+        .side-nav-item.active .side-nav-tick {
+            width: 24px;
+            background: #e8456d;
+        }
+        .side-nav-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.3);
+            margin-left: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+        }
+        .side-nav:hover .side-nav-label {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        .side-nav-item.active .side-nav-label {
+            color: #e8456d;
+        }
+        @media (max-width: 1200px) {
+            .side-nav { display: none; }
+        }
+
+        /* === APPLE-STYLE SECTIONS === */
+        .section {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 100px 40px;
+        }
+        .section-divider {
+            max-width: 980px;
+            margin: 0 auto;
+            border: none;
+            border-top: 1px solid #e5e5e7;
+        }
+
+        /* Section Header */
+        .section-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+            margin-bottom: 24px;
+            color: #1d1d1f;
+        }
+        .section-subtitle {
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #6e6e73;
+            max-width: 720px;
+        }
+
+        /* Body text */
+        .body-text {
+            font-size: 17px;
+            line-height: 1.76;
+            color: #1d1d1f;
+            margin-bottom: 24px;
+        }
+        .body-text:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Strategy cards */
+        .strategy-header {
+            font-size: 32px;
+            font-weight: 600;
+            line-height: 1.25;
+            margin-bottom: 12px;
+            color: #1d1d1f;
+        }
+        .strategy-sub {
+            font-size: 19px;
+            color: #6e6e73;
+            margin-bottom: 48px;
+            line-height: 1.5;
+        }
+        .subsection-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1d1d1f;
+        }
+        .subsection-block {
+            margin-bottom: 56px;
+        }
+        .subsection-block:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: #f5f5f7;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+        .highlight-box .body-text {
+            color: #1d1d1f;
+            margin-bottom: 0;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f5f5f7;
+            border-radius: 20px;
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6e6e73;
+            line-height: 1.4;
+        }
+
+        /* Insight cards */
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+        .insight-card {
+            background: #f5f5f7;
+            border-radius: 20px;
+            padding: 36px 28px;
+        }
+        .insight-card-title {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1d1d1f;
+        }
+        .insight-card-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #6e6e73;
+        }
+
+        /* AIGC section */
+        .aigc-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+        .aigc-card {
+            background: #f5f5f7;
+            border-radius: 20px;
+            padding: 36px 28px;
+        }
+        .aigc-card-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        .aigc-card-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #6e6e73;
+        }
+        .aigc-card-stat {
+            margin-top: 16px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #e8456d;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+        .tag {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 100px;
+            background: #f5f5f7;
+            color: #6e6e73;
+        }
+
+        /* Overview layout */
+        .overview-layout {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        .overview-left {
+            flex: 1;
+            min-width: 0;
+        }
+        .overview-right {
+            flex-shrink: 0;
+            width: 280px;
+        }
+        .overview-right img {
+            width: 100%;
+            border-radius: 24px;
+            display: block;
+            filter: drop-shadow(10px 10px 10px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Scroll reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .section-title { font-size: 32px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .insight-grid { grid-template-columns: 1fr; }
+            .aigc-grid { grid-template-columns: 1fr; }
+            .section { padding: 60px 24px; }
+            .overview-layout {
+                flex-direction: column;
+                gap: 40px;
+            }
+            .overview-right {
+                width: 220px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="hero-bg"></div>
+
+    <div class="hero-bg">
+        <div class="hero-content">
+            <img src="assets/title-logo.png" alt="每日呱呱乐" style="width: 460px; display: block;">
+            <p class="hero-desc">呱呱乐是KK（美团视频极速版）以桌面组件为核心场域的新活动玩法，以"刮刮乐"瓜分模式为核心交互载体，<br>通过游戏化揭奖体验驱动用户两次访问。</p>
+            <div class="tags" style="margin-top: 32px; justify-content: center;">
+                <span class="tag" style="background: rgba(255,255,255,0.2); color: #fff;">游戏化设计</span>
+                <span class="tag" style="background: rgba(255,255,255,0.2); color: #fff;">增长策略</span>
+                <span class="tag" style="background: rgba(255,255,255,0.2); color: #fff;">桌面组件</span>
+                <span class="tag" style="background: rgba(255,255,255,0.2); color: #fff;">AIGC提效</span>
+                <span class="tag" style="background: rgba(255,255,255,0.2); color: #fff;">品牌IP</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="frog-peek">
+        <div class="frog-swap">
+            <img src="assets/frog-peek-1.png" alt="呱呱乐青蛙" class="frog-frame frog-frame-1">
+            <img src="assets/frog-peek-2.png" alt="呱呱乐青蛙" class="frog-frame frog-frame-2">
+        </div>
+    </div>
+
+    <!-- 左侧刻度尺导航 -->
+    <nav class="side-nav" id="sideNav">
+        <a class="side-nav-item active" href="#sec-background"><span class="side-nav-tick"></span><span class="side-nav-label">需求背景</span></a>
+        <a class="side-nav-item" href="#sec-strategy1"><span class="side-nav-tick"></span><span class="side-nav-label">游戏化揭奖</span></a>
+        <a class="side-nav-item" href="#sec-strategy2"><span class="side-nav-tick"></span><span class="side-nav-label">权益锚定</span></a>
+        <a class="side-nav-item" href="#sec-strategy3"><span class="side-nav-tick"></span><span class="side-nav-label">品牌IP</span></a>
+        <a class="side-nav-item" href="#sec-aigc"><span class="side-nav-tick"></span><span class="side-nav-label">AIGC提效</span></a>
+        <a class="side-nav-item" href="#sec-results"><span class="side-nav-tick"></span><span class="side-nav-label">项目成果</span></a>
+        <a class="side-nav-item" href="#sec-takeaways"><span class="side-nav-tick"></span><span class="side-nav-label">经验沉淀</span></a>
+    </nav>
+
+    <div class="content-panel">
+        <div class="content-panel-pattern"></div>
+
+        <!-- 需求背景 -->
+        <div class="section reveal" id="sec-background">
+            <div class="section-label">Background</div>
+            <h2 class="section-title">需求背景</h2>
+            <p class="section-subtitle">2600万保有用户中，84%已对现有激励脱敏。</p>
+            <div class="overview-layout" style="margin-top: 24px;">
+                <div class="overview-left">
+                    <p class="body-text">KK当前保有用户2600万，DAU仅400万，超过84%的保有用户对现有签到、打卡等常规激励已脱敏，处于"装了不打开"的沉默状态。需要探索以桌面组件为核心场域的新活动玩法，用差异化的游戏化体验重新激活这批安卓下沉用户。</p>
+                    <p class="body-text">核心挑战不是"给多少钱"，而是"用什么形式让确定性的瓜分结果重新产生惊喜感"。</p>
+                </div>
+                <div class="overview-right">
+                    <img src="assets/earn-center.png" alt="赚钱中心界面">
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- 策略一 -->
+        <div class="section reveal" id="sec-strategy1">
+            <div class="section-label">Strategy 01</div>
+            <h2 class="section-title">构建游戏化揭奖体验<br>驱动两次访问</h2>
+            <p class="section-subtitle">将被动"接收奖励"转化为主动"揭示奖励"</p>
+
+            <div style="margin-top: 64px;">
+                <div class="subsection-block">
+                    <h3 class="subsection-title">形式选择：为什么是刮刮乐</h3>
+                    <p class="body-text">对比三类主流激励揭奖形式——常规签到/打卡用户已脱敏；宝箱/红包行业同质化严重，用户产生"套路感"防御；刮刮乐具有手指操作+可见变化的物理隐喻，差异化强，契合下沉用户偏好的"动手"交互。</p>
+                    <p class="body-text">用户不是被告知"你分了3毛钱"，而是亲手刮开涂层发现"我中了3毛钱"——结果相同，但心理价值完全不同。背后有三个行为心理学机制：变动比率强化（奖励的不可预测性产生最强行为持续性）、IKEA效应（用户参与揭示的结果主观价值更高）、峰终定律（刮开金币的瞬间是情绪Peak）。</p>
+                </div>
+
+                <div class="subsection-block">
+                    <h3 class="subsection-title">跨天节奏：让等待变成期待</h3>
+                    <p class="body-text">"当日报名→次日瓜分"的延迟满足结构天然拆成两次访问，服务DAU目标。构建"种期待→养悬念→爆惊喜"三段式情绪曲线：</p>
+                    <div class="highlight-box">
+                        <p class="body-text"><strong>种期待</strong> — 报名成功弹窗展示"明日0点可刮奖"+倍数卡揭示，利用信息缺口+禀赋效应</p>
+                        <p class="body-text" style="margin-top: 16px;"><strong>养悬念</strong> — 桌面组件画面切换+日历提醒推送，持续维持期待感</p>
+                        <p class="body-text" style="margin-top: 16px; margin-bottom: 0;"><strong>爆惊喜</strong> — 刮奖弹窗+翻倍升级动画，手指刮开揭示金额（第一峰）→桌面倍数升级动画叠加（第二峰）</p>
+                    </div>
+                    <p class="body-text">报名贡献当日活跃，次日领奖贡献次留，一次行为链条同时服务两个北极星指标。"等待"本身不是成本，是被设计过的驱动力。</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- 策略二 -->
+        <div class="section reveal" id="sec-strategy2">
+            <div class="section-label">Strategy 02</div>
+            <h2 class="section-title">前置差异化权益锚定<br>强化桌面渠道心智</h2>
+            <p class="section-subtitle">将桌面组件从"快捷入口"重新定义为"权益放大器"</p>
+
+            <div style="margin-top: 64px;">
+                <div class="subsection-block">
+                    <h3 class="subsection-title">权益感知前移</h3>
+                    <p class="body-text">桌面组件的核心差异化价值是"翻倍权益"（最高15倍）。将权益感知前移至报名成功瞬间——用户从桌面报名后立刻看到"恭喜获得6倍加成"的倍数卡揭示。利用禀赋效应：一旦感知到"我已经拥有6倍加成"，不来领奖等于"失去已有的东西"，损失厌恶的驱动力是获得激励的2-2.5倍。</p>
+                </div>
+
+                <div class="subsection-block">
+                    <h3 class="subsection-title">人群反向倍数：越不活跃，给的越多</h3>
+                    <p class="body-text">反转常规逻辑——越不活跃的用户给的翻倍越高。精妙之处在于成本结构：瓜分模式下总奖池固定，翻倍本质是池内份额再分配——桌面用户多拿，非桌面用户少拿，平台总支出不变。</p>
+                    <div class="highlight-box">
+                        <p class="body-text"><strong>流失/回流用户 → 15倍</strong> — 以超高收益击穿脱敏阈值，DAU增量核心来源</p>
+                        <p class="body-text" style="margin-top: 12px;"><strong>新用户/低活老用户 → 10倍</strong> — 显著差异化吸引首次试用桌面组件</p>
+                        <p class="body-text" style="margin-top: 12px;"><strong>中活老用户 → 5-8倍</strong> — 维持桌面渠道优势认知</p>
+                        <p class="body-text" style="margin-top: 12px; margin-bottom: 0;"><strong>高活老用户 → 2倍</strong> — 基础权益即可，避免过度补贴</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- 策略三 -->
+        <div class="section reveal" id="sec-strategy3">
+            <div class="section-label">Strategy 03</div>
+            <h2 class="section-title">品牌化IP承接<br>支撑长期运营复利</h2>
+            <p class="section-subtitle">解决长线运营的审美疲劳和活动辨识度问题</p>
+
+            <div style="margin-top: 64px;">
+                <div class="subsection-block">
+                    <h3 class="subsection-title">品牌化设计决策</h3>
+                    <p class="body-text">将"刮刮乐"转译为"呱呱乐"，配合青蛙IP形象形成独属于KK的活动品牌符号。"呱呱"与"刮刮"谐音，动作隐喻直觉化——青蛙"呱呱"叫，用户"刮刮"奖，零学习成本。</p>
+                    <p class="body-text">IP调性采用粉色青蛙+圆润设计语言，匹配下沉用户偏好的轻松可爱氛围，降低"激励活动=套路"的防御心理。长线延展性方面，IP支持节日换装、惊喜日特殊皮肤、连续参与成就体系等后续运营扩展，避免每次迭代从零建立认知。</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- AIGC 提效 -->
+        <div class="section reveal" id="sec-aigc">
+            <div class="section-label">AIGC</div>
+            <h2 class="section-title">AIGC 提效</h2>
+            <p class="section-subtitle">AI赋能设计全流程，从洞察到落地全面提速</p>
+
+            <div class="aigc-grid">
+                <div class="aigc-card">
+                    <div class="aigc-card-title">用户行为洞察与策略推导</div>
+                    <div class="aigc-card-text">利用AI大模型对保有用户活跃度标签进行聚类分析，辅助输出人群分层策略和反向倍数模型建议</div>
+                </div>
+                <div class="aigc-card">
+                    <div class="aigc-card-title">竞品交互模式研究</div>
+                    <div class="aigc-card-text">AI辅助批量采集和归纳拼多多天天领现金、抖音极速版宝箱、快手极速版等竞品激励揭奖交互模式</div>
+                    <div class="aigc-card-stat">效率提升 70%</div>
+                </div>
+                <div class="aigc-card">
+                    <div class="aigc-card-title">视觉素材探索</div>
+                    <div class="aigc-card-text">活动主视觉、青蛙IP形象探索阶段使用Midjourney生成概念方向，快速收敛设计风格</div>
+                    <div class="aigc-card-stat">效率提升 60%</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- 项目成果 -->
+        <div class="section reveal" id="sec-results">
+            <div class="section-label">Results</div>
+            <h2 class="section-title">项目成果</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">+1.5%</div>
+                    <div class="stat-label">KK DAU增长<br>A/B实验验证，覆盖全量安卓用户</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2次</div>
+                    <div class="stat-label">用户访问<br>报名+次日领奖，服务DAU和次留</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">显著↑</div>
+                    <div class="stat-label">桌面组件渗透率<br>差异化翻倍权益驱动组件报名</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">可控</div>
+                    <div class="stat-label">运营成本<br>瓜分模式下翻倍为份额再分配</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- 经验沉淀 -->
+        <div class="section reveal" id="sec-takeaways">
+            <div class="section-label">Takeaways</div>
+            <h2 class="section-title">经验沉淀</h2>
+
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <div class="insight-card-title">延迟满足型活动的游戏化设计方法论</div>
+                    <div class="insight-card-text">当奖励需要等待时，核心不是"告诉用户等多久"，而是"让等待本身变成期待"。手法：前置权益锚定→隔夜信息缺口→仪式感揭示+二次惊喜叠加。可复用至所有"非即时兑现"的激励活动设计。</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-card-title">"活跃度反向匹配倍数"的人群策略模型</div>
+                    <div class="insight-card-text">对越不活跃的用户给予越高专属权益倍数，精准撬动目标人群，避免对高活用户过度补贴。在瓜分模式下翻倍为池内份额再分配、总成本不变。可抽象为通用的"人群×权益×成本"配置框架。</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-card-title">下沉用户的游戏化交互偏好洞察</div>
+                    <div class="insight-card-text">下沉用户对"手指操作可见变化"的交互形式（刮、拆、翻、转）的参与度显著高于"点按确认"的静态形式。可复用至后续所有面向保有低活用户的激励活动设计。</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+// Hero parallax
+const heroContent = document.querySelector('.hero-content');
+const heroBg = document.querySelector('.hero-bg');
+window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    const maxScroll = window.innerHeight * 0.7;
+    const progress = Math.min(y / maxScroll, 1);
+
+    const scale = 1 - progress * 0.3;
+    const opacity = 1 - progress;
+    const contentY = -y * 0.4;
+    heroContent.style.transform = `translateY(${contentY}px) scale(${scale})`;
+    heroContent.style.opacity = opacity;
+
+    const bgY = -y * 0.15;
+    heroBg.style.transform = `translateY(${bgY}px)`;
+});
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// Side nav visibility & active state
+const sideNav = document.getElementById('sideNav');
+const sections = document.querySelectorAll('.content-panel .section[id]');
+const navItems = document.querySelectorAll('.side-nav-item');
+
+const updateSideNav = () => {
+    const scrollY = window.scrollY;
+    const panelTop = document.querySelector('.content-panel').offsetTop;
+
+    // Show/hide nav based on scroll position
+    if (scrollY > panelTop - window.innerHeight * 0.5) {
+        sideNav.classList.add('visible');
+    } else {
+        sideNav.classList.remove('visible');
+    }
+
+    // Update active state
+    let currentSection = '';
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.4) {
+            currentSection = section.id;
+        }
+    });
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === '#' + currentSection) {
+            item.classList.add('active');
+        }
+    });
+};
+window.addEventListener('scroll', updateSideNav);
+updateSideNav();
+
+// Smooth scroll for nav clicks
+navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(item.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+
+// Dock magnification effect
+const sideNavEl = document.getElementById('sideNav');
+const navItemsList = Array.from(sideNavEl.querySelectorAll('.side-nav-item'));
+const navTicks = navItemsList.map(item => item.querySelector('.side-nav-tick'));
+const navLabels = navItemsList.map(item => item.querySelector('.side-nav-label'));
+
+let dockRaf = null;
+let dockMouseY = -999;
+
+sideNavEl.addEventListener('mousemove', (e) => {
+    dockMouseY = e.clientY;
+    if (!dockRaf) {
+        dockRaf = requestAnimationFrame(() => {
+            for (let i = 0; i < navItemsList.length; i++) {
+                const rect = navItemsList[i].getBoundingClientRect();
+                const centerY = rect.top + rect.height / 2;
+                const dist = Math.abs(dockMouseY - centerY);
+                const t = Math.min(dist / 120, 1);
+                const s = (1 + Math.cos(Math.PI * t)) / 2;
+                navTicks[i].style.width = (16 + s * 24) + 'px';
+                navTicks[i].style.background = `rgba(0, 0, 0, ${0.3 + s * 0.7})`;
+                navLabels[i].style.fontSize = (12 + s * 8) + 'px';
+                navLabels[i].style.color = `rgba(0, 0, 0, ${0.3 + s * 0.7})`;
+                navItemsList[i].style.padding = (8 + s * 12) + 'px 0';
+            }
+            dockRaf = null;
+        });
+    }
+});
+sideNavEl.addEventListener('mouseleave', () => {
+    if (dockRaf) { cancelAnimationFrame(dockRaf); dockRaf = null; }
+    for (let i = 0; i < navItemsList.length; i++) {
+        navTicks[i].style.width = '';
+        navTicks[i].style.background = '';
+        navLabels[i].style.fontSize = '';
+        navLabels[i].style.color = '';
+        navItemsList[i].style.padding = '';
+    }
+});
+
+// Pattern mouse follow
+const contentPanel = document.querySelector('.content-panel');
+const pattern = document.querySelector('.content-panel-pattern');
+contentPanel.addEventListener('mousemove', (e) => {
+    const rect = contentPanel.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top + contentPanel.scrollTop;
+    pattern.style.setProperty('--mouse-x', x + 'px');
+    pattern.style.setProperty('--mouse-y', y + 'px');
+});
+contentPanel.addEventListener('mouseleave', () => {
+    pattern.style.setProperty('--mouse-x', '-200px');
+    pattern.style.setProperty('--mouse-y', '-200px');
+});
+</script>
+
 </body>
 </html>
